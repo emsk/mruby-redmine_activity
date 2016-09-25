@@ -30,6 +30,7 @@ module MrubyRedmineActivity
 
     def run
       case @command
+      when 'get'                        then get
       when 'today'                      then today
       when 'version', '--version', '-v' then version
       when 'help'                       then help(@text)
@@ -37,9 +38,13 @@ module MrubyRedmineActivity
       end
     end
 
-    def today
+    def get
       fetcher = Fetcher.new(@options)
-      fetcher.today
+      fetcher.get
+    end
+
+    def today
+      @options.has_key?(:date) ? help(@command) : get
     end
 
     def version

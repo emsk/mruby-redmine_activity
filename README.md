@@ -10,6 +10,13 @@ WIP
 
 ## Usage
 
+Print one day's activities:
+
+```sh
+$ mruby-redmine_activity get --date=2016-01-23 --url=http://example.com/redmine --login-id=admin --password=pass
+Example Project - 機能 #1 (新規): チケット１ (2016-01-23T12:34:56Z)
+```
+
 Print today's activities:
 
 ```sh
