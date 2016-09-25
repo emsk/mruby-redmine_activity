@@ -1,5 +1,7 @@
 # mruby-redmine_activity
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Summarize activities on Redmine.
 
 *This tool is an mruby implementation of the [redmine_activity](https://github.com/emsk/redmine_activity).*
