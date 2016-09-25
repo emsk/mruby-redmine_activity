@@ -1,7 +1,5 @@
 module MrubyRedmineActivity
   class Fetcher
-    LOGIN_CRITERIA = { action: '/redmine/login' }
-
     TOKEN_REGEXP   = Regexp.compile('<input type="hidden" name="authenticity_token" value="(.+)" />')
     COOKIE_REGEXP  = Regexp.compile('(_redmine_session.+); path=/; HttpOnly')
     ENTRY_REGEXP   = Regexp.compile('<entry>.+?</entry>', Regexp::MULTILINE)
