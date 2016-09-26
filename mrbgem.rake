@@ -1,6 +1,9 @@
+require_relative 'mrblib/mruby-redmine_activity/version'
+
 MRuby::Gem::Specification.new('mruby-redmine_activity') do |spec|
   spec.license = 'MIT'
   spec.author  = 'emsk'
+  spec.version = MrubyRedmineActivity::VERSION
   spec.summary = 'Summarize activities on Redmine.'
   spec.bins    = ['mruby-redmine_activity']
 
