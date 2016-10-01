@@ -26,6 +26,8 @@ $ mruby-redmine_activity today --url=http://example.com/redmine --login-id=admin
 Example Project - 機能 #1 (新規): チケット１ (2016-01-23T12:34:56Z)
 ```
 
+Run `mruby-redmine_activity help` for more details.
+
 ## ENV
 
 | ENV Variable | Description |

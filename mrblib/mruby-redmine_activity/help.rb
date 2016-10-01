@@ -6,6 +6,7 @@ Usage:
   mruby-redmine_activity get             # Print one day's activities
   mruby-redmine_activity help [COMMAND]  # Describe available commands or one specific command
   mruby-redmine_activity today           # Print today's activities
+  mruby-redmine_activity yesterday       # Print yesterday's activities
     EOS
 
     USAGE_GET = <<-EOS
@@ -34,15 +35,28 @@ Options:
 Print today's activities
     EOS
 
+    USAGE_YESTERDAY = <<-EOS
+Usage:
+  mruby-redmine_activity yesterday
+
+Options:
+  [--url=URL]
+  [--login-id=LOGIN_ID]
+  [--password=PASSWORD]
+
+Print yesterday's activities
+    EOS
+
     def initialize(command = nil)
       @command = command
     end
 
     def run
       puts case @command
-           when 'get'   then USAGE_GET
-           when 'today' then USAGE_TODAY
-           else              USAGE_COMMON
+           when 'get'       then USAGE_GET
+           when 'today'     then USAGE_TODAY
+           when 'yesterday' then USAGE_YESTERDAY
+           else                  USAGE_COMMON
            end
     end
   end

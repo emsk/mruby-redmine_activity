@@ -32,6 +32,7 @@ module MrubyRedmineActivity
       case @command
       when 'get'                        then get
       when 'today'                      then today
+      when 'yesterday'                  then yesterday
       when 'version', '--version', '-v' then version
       when 'help'                       then help(@text)
       else                                   help
@@ -45,6 +46,14 @@ module MrubyRedmineActivity
 
     def today
       @options.has_key?(:date) ? help(@command) : get
+    end
+
+    def yesterday
+      return help(@command) if @options.has_key?(:date)
+
+      time = Time.now - 86400
+      @options[:date] = "#{time.year}-#{time.month}-#{time.day}"
+      get
     end
 
     def version
