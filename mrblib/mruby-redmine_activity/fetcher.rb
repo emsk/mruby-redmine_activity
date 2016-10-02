@@ -1,5 +1,6 @@
 module MrubyRedmineActivity
   class Fetcher
+    COLORS         = { yellow: "\e[33m", reset: "\e[0m" }
     TOKEN_REGEXP   = Regexp.compile('<input type="hidden" name="authenticity_token" value="(.+)" />')
     COOKIE_REGEXP  = Regexp.compile('(_redmine_session.+); path=/; HttpOnly')
     ENTRY_REGEXP   = Regexp.compile('<entry>.+?</entry>', Regexp::MULTILINE)
@@ -40,7 +41,7 @@ module MrubyRedmineActivity
         updated = UPDATED_REGEXP.match(entry)[1]
         updated_time = utc_time(updated)
 
-        puts "#{title} (#{updated})" if cover?(updated_time)
+        puts "#{COLORS[:yellow]}#{title}#{COLORS[:reset]} (#{updated})" if cover?(updated_time)
       end
     end
 
