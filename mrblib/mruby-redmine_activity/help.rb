@@ -18,6 +18,7 @@ Options:
   [--url=URL]
   [--login-id=LOGIN_ID]
   [--password=PASSWORD]
+  [--user-id=USER_ID]
   [--date=DATE]
 
 Print one day's activities
@@ -31,6 +32,7 @@ Options:
   [--url=URL]
   [--login-id=LOGIN_ID]
   [--password=PASSWORD]
+  [--user-id=USER_ID]
 
 Print today's activities
     EOS
@@ -43,6 +45,7 @@ Options:
   [--url=URL]
   [--login-id=LOGIN_ID]
   [--password=PASSWORD]
+  [--user-id=USER_ID]
 
 Print yesterday's activities
     EOS

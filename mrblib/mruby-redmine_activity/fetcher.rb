@@ -1,6 +1,6 @@
 module MrubyRedmineActivity
   class Fetcher
-    COLORS         = { yellow: "\e[33m", reset: "\e[0m" }
+    COLORS         = { red: "\e[31m", yellow: "\e[33m", reset: "\e[0m" }
     TOKEN_REGEXP   = Regexp.compile('<input type="hidden" name="authenticity_token" value="(.+)" />')
     COOKIE_REGEXP  = Regexp.compile('(_redmine_session.+); path=/; HttpOnly')
     ENTRY_REGEXP   = Regexp.compile('<entry>.+?</entry>', Regexp::MULTILINE)
@@ -35,13 +35,17 @@ module MrubyRedmineActivity
       activity_atom_request_cookie = COOKIE_REGEXP.match(top_page_response_headers['set-cookie'])[1]
       activity_atom_request_headers = { 'Cookie' => activity_atom_request_cookie }
 
-      body = http.get(activity_atom_url, nil, activity_atom_request_headers).body
-      body.scan(ENTRY_REGEXP) do |entry|
-        title = TITLE_REGEXP.match(entry)[1]
-        updated = UPDATED_REGEXP.match(entry)[1]
-        updated_time = utc_time(updated)
+      activity_atom_response = http.get(activity_atom_url, nil, activity_atom_request_headers)
+      if activity_atom_response.code == 404
+        puts "#{COLORS[:red]}404 Not Found.#{COLORS[:reset]}"
+      else
+        activity_atom_response.body.scan(ENTRY_REGEXP) do |entry|
+          title = TITLE_REGEXP.match(entry)[1]
+          updated = UPDATED_REGEXP.match(entry)[1]
+          updated_time = utc_time(updated)
 
-        puts "#{COLORS[:yellow]}#{title}#{COLORS[:reset]} (#{updated})" if cover?(updated_time)
+          puts "#{COLORS[:yellow]}#{title}#{COLORS[:reset]} (#{updated})" if cover?(updated_time)
+        end
       end
     end
 
@@ -51,7 +55,8 @@ module MrubyRedmineActivity
 
     def activity_atom_url
       from = "&from=#{@date}" if @date
-      "#{@url}/activity.atom?show_issues=1#{from}"
+      user_id = "&user_id=#{@user_id}" if @user_id
+      "#{@url}/activity.atom?show_issues=1#{from}#{user_id}"
     end
 
     def utc_time(time_str)
