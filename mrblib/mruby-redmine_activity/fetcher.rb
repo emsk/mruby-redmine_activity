@@ -19,33 +19,15 @@ module MrubyRedmineActivity
     end
 
     def get
-      http = HttpRequest.new
+      agent                  = HttpRequest.new
+      login_page_response    = agent.get(login_url)
+      top_page_response      = agent.post(login_url, top_page_request_params(login_page_response), top_page_request_headers(login_page_response))
+      activity_atom_response = agent.get(activity_atom_url, nil, activity_atom_request_headers(top_page_response))
 
-      login_page_response = http.get(login_url)
-      authenticity_token = TOKEN_REGEXP.match(login_page_response.body)[1]
-      top_page_request_cookie = COOKIE_REGEXP.match(login_page_response.headers['set-cookie'])[1]
-      top_page_request_params = {
-        username: @login_id,
-        password: @password,
-        authenticity_token: authenticity_token
-      }
-      top_page_request_headers = { 'Cookie' => top_page_request_cookie }
-
-      top_page_response_headers = http.post(login_url, top_page_request_params, top_page_request_headers).headers
-      activity_atom_request_cookie = COOKIE_REGEXP.match(top_page_response_headers['set-cookie'])[1]
-      activity_atom_request_headers = { 'Cookie' => activity_atom_request_cookie }
-
-      activity_atom_response = http.get(activity_atom_url, nil, activity_atom_request_headers)
       if activity_atom_response.code == 404
         puts "#{COLORS[:red]}404 Not Found.#{COLORS[:reset]}"
       else
-        activity_atom_response.body.scan(ENTRY_REGEXP) do |entry|
-          title = TITLE_REGEXP.match(entry)[1]
-          updated = UPDATED_REGEXP.match(entry)[1]
-          updated_time = utc_time(updated)
-
-          puts "#{COLORS[:yellow]}#{title}#{COLORS[:reset]} (#{updated})" if cover?(updated_time)
-        end
+        parse(activity_atom_response.body)
       end
     end
 
@@ -53,10 +35,36 @@ module MrubyRedmineActivity
       "#{@url}/login"
     end
 
+    def top_page_request_params(login_page_response)
+      {
+        username: @login_id,
+        password: @password,
+        authenticity_token: TOKEN_REGEXP.match(login_page_response.body)[1]
+      }
+    end
+
+    def top_page_request_headers(login_page_response)
+      { 'Cookie' => COOKIE_REGEXP.match(login_page_response.headers['set-cookie'])[1] }
+    end
+
     def activity_atom_url
       from = "&from=#{@date}" if @date
       user_id = "&user_id=#{@user_id}" if @user_id
       "#{@url}/activity.atom?show_issues=1#{from}#{user_id}"
+    end
+
+    def activity_atom_request_headers(top_page_response)
+      { 'Cookie' => COOKIE_REGEXP.match(top_page_response.headers['set-cookie'])[1] }
+    end
+
+    def parse(xml)
+      xml.scan(ENTRY_REGEXP) do |entry|
+        title = TITLE_REGEXP.match(entry)[1]
+        updated = UPDATED_REGEXP.match(entry)[1]
+        updated_time = utc_time(updated)
+
+        puts "#{COLORS[:yellow]}#{title}#{COLORS[:reset]} (#{updated})" if cover?(updated_time)
+      end
     end
 
     def utc_time(time_str)
