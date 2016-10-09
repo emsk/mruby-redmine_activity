@@ -4,7 +4,7 @@ MRuby::Gem::Specification.new('mruby-redmine_activity') do |spec|
   spec.license = 'MIT'
   spec.author  = 'emsk'
   spec.version = MrubyRedmineActivity::VERSION
-  spec.summary = 'Summarize activities on Redmine.'
+  spec.summary = "Summarize one day's activities on Redmine."
   spec.bins    = ['mruby-redmine_activity']
 
   spec.add_dependency 'mruby-print', core: 'mruby-print'
