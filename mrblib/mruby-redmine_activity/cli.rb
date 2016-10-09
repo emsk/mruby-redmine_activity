@@ -3,18 +3,18 @@ module MrubyRedmineActivity
     OPTION_REGEXP = Regexp.compile('^(--|-)(.+)=(.*)$')
 
     def self.start(argv)
-      if argv.size == 1
-        Help.new.run
-      else
-        new(argv).run
-      end
+      new(argv).run
     end
 
     def initialize(argv)
-      @command = argv[1]
+      @command = command?(argv[1]) ? argv[1] : 'get'
       @text ||= ''
       @options ||= {}
-      parse_args(argv[2..-1])
+      parse_args(argv[1..-1])
+    end
+
+    def command?(arg)
+      arg && !OPTION_REGEXP.match(arg)
     end
 
     def parse_args(args)
