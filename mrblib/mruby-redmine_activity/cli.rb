@@ -45,11 +45,11 @@ module MrubyRedmineActivity
     end
 
     def today
-      @options.has_key?(:date) ? help(@command) : get
+      @options.key?(:date) ? help(@command) : get
     end
 
     def yesterday
-      return help(@command) if @options.has_key?(:date)
+      return help(@command) if @options.key?(:date)
 
       time = Time.now - 86400
       @options[:date] = "#{time.year}-#{time.month}-#{time.day}"
