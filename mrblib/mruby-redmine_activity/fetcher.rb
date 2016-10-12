@@ -1,10 +1,11 @@
 module MrubyRedmineActivity
   class Fetcher
-    COLORS         = { red: "\e[31m", yellow: "\e[33m", reset: "\e[0m" }
+    COLORS         = { red: "\e[31m", yellow: "\e[33m", cyan: "\e[36m", reset: "\e[0m" }
     TOKEN_REGEXP   = Regexp.compile('<input type="hidden" name="authenticity_token" value="(.+)" />')
     COOKIE_REGEXP  = Regexp.compile('(_redmine_session.+); path=/; HttpOnly')
     ENTRY_REGEXP   = Regexp.compile('<entry>.+?</entry>', Regexp::MULTILINE)
     TITLE_REGEXP   = Regexp.compile('<title>(.+)</title>')
+    NAME_REGEXP    = Regexp.compile('<name>(.+)</name>')
     UPDATED_REGEXP = Regexp.compile('<updated>(.+)</updated>')
     TIME_REGEXP    = Regexp.compile('(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z')
 
@@ -59,11 +60,14 @@ module MrubyRedmineActivity
 
     def parse(xml)
       xml.scan(ENTRY_REGEXP) do |entry|
-        title = TITLE_REGEXP.match(entry)[1]
         updated = UPDATED_REGEXP.match(entry)[1]
         updated_time = utc_time(updated)
 
-        puts "#{COLORS[:yellow]}#{title}#{COLORS[:reset]} (#{updated})" if cover?(updated_time)
+        next unless cover?(updated_time)
+
+        title = TITLE_REGEXP.match(entry)[1]
+        name = NAME_REGEXP.match(entry)[1]
+        output_summary(title, name, updated)
       end
     end
 
@@ -94,6 +98,10 @@ module MrubyRedmineActivity
       beginning_of_day = Time.local(time.year, time.month, time.day).utc
       end_of_day = Time.local(time.year, time.month, time.day, 23, 59, 59).utc
       @time_range = beginning_of_day..end_of_day
+    end
+
+    def output_summary(title, name, updated)
+      puts "#{COLORS[:yellow]}#{title}#{COLORS[:reset]} #{COLORS[:cyan]}(#{name})#{COLORS[:reset]} (#{updated})"
     end
   end
 end
