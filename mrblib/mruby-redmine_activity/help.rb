@@ -19,6 +19,7 @@ Options:
   [--login-id=LOGIN_ID]
   [--password=PASSWORD]
   [--user-id=USER_ID]
+  [--project=PROJECT_IDENTIFIER]
   [--date=DATE]
 
 Print one day's activities
@@ -33,6 +34,7 @@ Options:
   [--login-id=LOGIN_ID]
   [--password=PASSWORD]
   [--user-id=USER_ID]
+  [--project=PROJECT_IDENTIFIER]
 
 Print today's activities
     EOS
@@ -46,6 +48,7 @@ Options:
   [--login-id=LOGIN_ID]
   [--password=PASSWORD]
   [--user-id=USER_ID]
+  [--project=PROJECT_IDENTIFIER]
 
 Print yesterday's activities
     EOS

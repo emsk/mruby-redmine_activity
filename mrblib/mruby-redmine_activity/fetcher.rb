@@ -49,9 +49,10 @@ module MrubyRedmineActivity
     end
 
     def activity_atom_url
+      project = "/projects/#{@project}" if @project
       from = "&from=#{@date}" if @date
       user_id = "&user_id=#{@user_id}" if @user_id
-      "#{@url}/activity.atom?show_issues=1#{from}#{user_id}"
+      "#{@url}#{project}/activity.atom?show_issues=1#{from}#{user_id}"
     end
 
     def activity_atom_request_headers(top_page_response)
@@ -59,6 +60,8 @@ module MrubyRedmineActivity
     end
 
     def parse(xml)
+      project_title = xml[TITLE_REGEXP, 1][/(.+):/, 1]
+
       xml.scan(ENTRY_REGEXP) do |entry|
         updated = UPDATED_REGEXP.match(entry)[1]
         updated_time = utc_time(updated)
@@ -66,6 +69,7 @@ module MrubyRedmineActivity
         next unless cover?(updated_time)
 
         title = TITLE_REGEXP.match(entry)[1]
+        title = "#{project_title} - #{title}" if @project
         name = NAME_REGEXP.match(entry)[1]
         output_summary(title, name, updated)
       end
