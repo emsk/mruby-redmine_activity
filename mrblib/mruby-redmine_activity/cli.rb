@@ -1,6 +1,6 @@
 module MrubyRedmineActivity
   class CLI
-    OPTION_REGEXP = Regexp.compile('^(--|-)(.+)=(.*)$')
+    OPTION = /^(--|-)(.+)=(.*)$/
 
     def self.start(argv)
       new(argv).run
@@ -14,12 +14,12 @@ module MrubyRedmineActivity
     end
 
     def command?(arg)
-      arg && !OPTION_REGEXP.match(arg)
+      arg && !OPTION.match(arg)
     end
 
     def parse_args(args)
       args.each do |arg|
-        option = OPTION_REGEXP.match(arg)
+        option = OPTION.match(arg)
         if option
           @options[option[2].gsub('-', '_').to_sym] = option[3]
         else

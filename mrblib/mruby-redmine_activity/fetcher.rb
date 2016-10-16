@@ -1,13 +1,15 @@
 module MrubyRedmineActivity
   class Fetcher
     COLORS         = { red: "\e[31m", yellow: "\e[33m", cyan: "\e[36m", reset: "\e[0m" }
-    TOKEN_REGEXP   = Regexp.compile('<input type="hidden" name="authenticity_token" value="(.+)" />')
-    COOKIE_REGEXP  = Regexp.compile('(_redmine_session.+); path=/; HttpOnly')
-    ENTRY_REGEXP   = Regexp.compile('<entry>.+?</entry>', Regexp::MULTILINE)
-    TITLE_REGEXP   = Regexp.compile('<title>(.+)</title>')
-    NAME_REGEXP    = Regexp.compile('<name>(.+)</name>')
-    UPDATED_REGEXP = Regexp.compile('<updated>(.+)</updated>')
-    TIME_REGEXP    = Regexp.compile('(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z')
+    TOKEN          = /<input type="hidden" name="authenticity_token" value="(.+)" \/>/
+    COOKIE         = /(_redmine_session.+); path=\/; HttpOnly/
+    ENTRY          = /<entry>.+?<\/entry>/m
+    TITLE          = /<title>(.+)<\/title>/
+    PROJECT_TITLE  = /(.+):/
+    NAME           = /<name>(.+)<\/name>/
+    UPDATED        = /<updated>(.+)<\/updated>/
+    TIME           = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z/
+    DATE_SEPARATOR = /-|\/|\./
 
     def initialize(options = {})
       @url      = ENV['REDMINE_ACTIVITY_URL']
@@ -40,12 +42,12 @@ module MrubyRedmineActivity
       {
         username: @login_id,
         password: @password,
-        authenticity_token: TOKEN_REGEXP.match(login_page_response.body)[1]
+        authenticity_token: login_page_response.body[TOKEN, 1]
       }
     end
 
     def top_page_request_headers(login_page_response)
-      { 'Cookie' => COOKIE_REGEXP.match(login_page_response.headers['set-cookie'])[1] }
+      { 'Cookie' => login_page_response.headers['set-cookie'][COOKIE, 1] }
     end
 
     def activity_atom_url
@@ -56,27 +58,27 @@ module MrubyRedmineActivity
     end
 
     def activity_atom_request_headers(top_page_response)
-      { 'Cookie' => COOKIE_REGEXP.match(top_page_response.headers['set-cookie'])[1] }
+      { 'Cookie' => top_page_response.headers['set-cookie'][COOKIE, 1] }
     end
 
     def parse(xml)
-      project_title = xml[TITLE_REGEXP, 1][/(.+):/, 1]
+      project_title = xml[TITLE, 1][PROJECT_TITLE, 1]
 
-      xml.scan(ENTRY_REGEXP) do |entry|
-        updated = UPDATED_REGEXP.match(entry)[1]
+      xml.scan(ENTRY) do |entry|
+        updated = entry[UPDATED, 1]
         updated_time = utc_time(updated)
 
         next unless cover?(updated_time)
 
-        title = TITLE_REGEXP.match(entry)[1]
+        title = entry[TITLE, 1]
         title = "#{project_title} - #{title}" if @project
-        name = NAME_REGEXP.match(entry)[1]
+        name = entry[NAME, 1]
         output_summary(title, name, updated)
       end
     end
 
     def utc_time(time_str)
-      match = TIME_REGEXP.match(time_str)
+      match = TIME.match(time_str)
       year  = match[1].to_i
       month = match[2].to_i
       day   = match[3].to_i
@@ -94,7 +96,7 @@ module MrubyRedmineActivity
       return @time_range if @time_range
 
       if @date
-        time = Time.local(*@date.split(/-|\/|\./).map { |d| d.to_i })
+        time = Time.local(*@date.split(DATE_SEPARATOR).map { |d| d.to_i })
       else
         time = Time.now
       end
