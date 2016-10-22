@@ -64,7 +64,7 @@ module MrubyRedmineActivity
     def parse(xml)
       project_title = xml[TITLE, 1][PROJECT_TITLE, 1]
 
-      xml.scan(ENTRY) do |entry|
+      xml.scan(ENTRY).reverse.each do |entry|
         updated = entry[UPDATED, 1]
         updated_time = utc_time(updated)
 

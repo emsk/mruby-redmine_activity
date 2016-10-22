@@ -16,8 +16,8 @@ Print today's activities:
 
 ```sh
 $ mruby-redmine_activity --url=http://example.com/redmine --login-id=admin --password=pass
-Example Project - 機能 #2 (新規): チケット２ (山田 花子) (2016-01-23 13:45:12)
 Example Project - 機能 #1 (新規): チケット１ (田中 太郎) (2016-01-23 12:34:56)
+Example Project - 機能 #2 (新規): チケット２ (山田 花子) (2016-01-23 13:45:12)
 ```
 
 Print yesterday's activities:
