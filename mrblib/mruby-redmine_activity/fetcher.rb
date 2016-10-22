@@ -9,6 +9,7 @@ module MrubyRedmineActivity
     UPDATED        = /<updated>(.+)<\/updated>/
     TIME           = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z/
     DATE_SEPARATOR = /-|\/|\./
+    TIME_FORMAT    = '%04d-%02d-%02d %02d:%02d:%02d'
 
     def initialize(options = {})
       @url      = ENV['REDMINE_ACTIVITY_URL']
@@ -72,7 +73,7 @@ module MrubyRedmineActivity
         title = entry[TITLE, 1]
         title = "#{project_title} - #{title}" if @project
         name = entry[NAME, 1]
-        output_summary(title, name, updated)
+        output_summary(title, name, format_time(updated_time.getlocal))
       end
     end
 
@@ -103,6 +104,10 @@ module MrubyRedmineActivity
       beginning_of_day = Time.local(time.year, time.month, time.day).utc
       end_of_day = Time.local(time.year, time.month, time.day, 23, 59, 59).utc
       @time_range = beginning_of_day..end_of_day
+    end
+
+    def format_time(time)
+      format(TIME_FORMAT, time.year, time.month, time.day, time.hour, time.min, time.sec)
     end
 
     def output_summary(title, name, updated)
