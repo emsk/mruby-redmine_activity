@@ -2,7 +2,6 @@ module MrubyRedmineActivity
   class Fetcher
     COLORS         = { red: "\e[31m", yellow: "\e[33m", cyan: "\e[36m", reset: "\e[0m" }
     TOKEN          = /<input type="hidden" name="authenticity_token" value="(.+)" \/>/
-    COOKIE         = /(_redmine_session.+); path=\/; HttpOnly/
     ENTRY          = /<entry>.+?<\/entry>/m
     TITLE          = /<title>(.+)<\/title>/
     PROJECT_TITLE  = /(.+):/
@@ -47,7 +46,7 @@ module MrubyRedmineActivity
     end
 
     def top_page_request_headers(login_page_response)
-      { 'Cookie' => login_page_response.headers['set-cookie'][COOKIE, 1] }
+      { 'Cookie' => login_page_response.headers['set-cookie'] }
     end
 
     def activity_atom_url
@@ -58,7 +57,7 @@ module MrubyRedmineActivity
     end
 
     def activity_atom_request_headers(top_page_response)
-      { 'Cookie' => top_page_response.headers['set-cookie'][COOKIE, 1] }
+      { 'Cookie' => top_page_response.headers['set-cookie'] }
     end
 
     def parse(xml)
