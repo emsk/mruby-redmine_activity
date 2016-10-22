@@ -12,4 +12,5 @@ MRuby::Gem::Specification.new('mruby-redmine_activity') do |spec|
   spec.add_dependency 'mruby-env'
   spec.add_dependency 'mruby-httprequest'
   spec.add_dependency 'mruby-onig-regexp'
+  spec.add_dependency 'mruby-polarssl'
 end
