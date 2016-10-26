@@ -32,7 +32,16 @@ Print one day's activities:
 $ mruby-redmine_activity --date=2016-01-01 --url=http://example.com/redmine --login-id=admin --password=pass
 ```
 
-Run `mruby-redmine_activity help` for more details.
+## Command Options
+
+| Option | Description | Type |
+| :----- | :---------- | :--- |
+| `--url` | Redmine URL | String |
+| `--login-id` | Login ID | String |
+| `--password` | Login password | String |
+| `--user-id` | Target user ID | Integer |
+| `--project` | Target project identifier | String |
+| `--date` | Target date | String |
 
 ## ENV
 
